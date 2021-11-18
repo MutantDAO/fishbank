@@ -173,9 +173,15 @@ contract FishcollectorTest is DSTest {
         fishcollector.deposit(_amount);
     }
 
+    function testFailWithdrawalController() public {
+        FishCollectorUser(controller).withdrawal();
+    }
+
     function testWithdrawController() public {
         approveAndDeposit(app, controller, 100 ether);
+        assertEq(fishcollector.balanceOf(controller), 5 ether);
         FishCollectorUser(controller).withdrawal();
+        assertEq(fishcollector.balanceOf(controller), 0);
         assertEq(
             fish.balanceOf(controller),
             initialBalanceController + 5 ether

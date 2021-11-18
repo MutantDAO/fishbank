@@ -13,3 +13,7 @@
 ```
 ./test.sh
 ```
+
+# Usage
+
+Owner deploys contract.

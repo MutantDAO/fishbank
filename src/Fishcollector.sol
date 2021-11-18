@@ -78,8 +78,10 @@ contract Fishcollector is Ownable {
     }
 
     function withdrawal() public {
-        require(balances[msg.sender] > 0, "No balance available to withdraw");
+        uint256 _amount = balances[msg.sender];
+        require(_amount > 0, "No balance available to withdraw");
+        balances[msg.sender] = 0;
 
-        IERC20(currency).safeTransfer(msg.sender, balances[msg.sender]);
+        IERC20(currency).safeTransfer(msg.sender, _amount);
     }
 }
