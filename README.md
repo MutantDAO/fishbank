@@ -35,7 +35,7 @@ make test
 
 App developers make their apps and include the following code to make a deposit against their app:
 
-```sol
+```solidity
 
 import "MutantDAO/fishsink/src/Depositor.sol"
 
@@ -66,7 +66,7 @@ Fishsink(FISHSINK).register(MY_DEV_ADDRESS);
 
 2. Deployer recieves addresses for registration and registers those addresses withthe contract:
 
-```
+```solidity
 fishsink.register(appContract1, developer1);
 fishsink.register(appContract2, developer2);
 fishsink.register(appContract3, developer3);
@@ -77,7 +77,7 @@ Developers can register more than one app contract.
 
 3. Live applications approve a transfer and call the deposit method.
 
-```sol
+```solidity
 ERC20(fish).approve(fishsink, 100 ether);
 Fishsink(fishsink).deposit(100 ether);
 ```
@@ -90,6 +90,6 @@ Fishsink(fishsink).deposit(100 ether);
 
 5. In the case of problematic behaviour rewards can be removed by reregistering the app with address(0)
 
-```
+```solidity
 fishsink.register(appContract1, address(0)); // Disable withdrawals
 ```
