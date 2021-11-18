@@ -11,7 +11,7 @@ contract Fishsink is Ownable {
 
     uint16 private constant MAX_RATE = 1000;
     uint16 rate = 500;
-    address currency;
+    address public currency;
     address sinkAddress;
 
     mapping(address => uint256) balances;

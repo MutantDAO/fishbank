@@ -31,6 +31,35 @@ make
 make test
 ```
 
+# System
+
+App developers make their apps and include the following code to make a deposit against their app:
+
+```sol
+
+import "MutantDAO/fishsink/src/Depositor.sol"
+
+contract MyContract is Depositor {
+  address constant MY_WITHDRAWAL_ADDRESS = 0x1234aedf1234aedf1234aedf1234aedf1234;
+
+  constructor(address _fishSink) Depositor(_fishSink, MY_ADDRESS) {}
+
+  function takePayment(uint256 _amount){
+    // Some logic...
+
+    // This causes interaction with
+    _sinkFish(_amount);
+  }
+}
+
+```
+
+This should work regardless of whether they are registered. (Currently not implemented)
+
+```solidity
+Fishsink(FISHSINK).register(MY_DEV_ADDRESS);
+```
+
 # Usage
 
 1. Deployer deploys `fishsink` contract
