@@ -1,6 +1,11 @@
 # Prerequisites
 
-- [dapptools](https://github.com/dapphub/dapptools)
+- [make](https://www.gnu.org/software/make/)
+
+# Installed dependencies
+
+- [dapp.tools](https://github.com/dapphub/dapptools)
+- [nix](https://nixos.org)
 
 # Installation
 
@@ -8,10 +13,22 @@
 ./install.sh
 ```
 
+This installs:
+
+- nix
+- dapp.tools
+- solc
+
+# Building
+
+```
+make
+```
+
 # Testing
 
 ```
-./test.sh
+make test
 ```
 
 # Usage

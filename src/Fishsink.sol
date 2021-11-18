@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract Fishcollector is Ownable {
+contract Fishsink is Ownable {
     using Counters for Counters.Counter;
     using SafeERC20 for IERC20;
 

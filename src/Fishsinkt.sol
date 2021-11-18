@@ -3,7 +3,7 @@ pragma solidity ^0.8.6;
 
 import "ds-test/test.sol";
 
-import "./Fishcollector.sol";
+import "./Fishsink.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Fish is ERC20 {
@@ -56,9 +56,9 @@ contract TokenUser {
 }
 
 contract FishCollectorUser is TokenUser {
-    Fishcollector c;
+    Fishsink c;
 
-    constructor(Fishcollector _c, IERC20 _fish) TokenUser(_fish) {
+    constructor(Fishsink _c, IERC20 _fish) TokenUser(_fish) {
         c = _c;
     }
 
@@ -71,12 +71,12 @@ contract FishCollectorUser is TokenUser {
     }
 }
 
-contract FishcollectorTest is DSTest {
+contract FishsinkTest is DSTest {
     uint256 constant initialBalanceThis = 0;
     uint256 constant initialBalanceApp = 200 ether;
     uint256 constant initialBalanceController = 200 ether;
 
-    Fishcollector fishcollector;
+    Fishsink fishcollector;
     Fish fish;
     address sink;
 
@@ -86,7 +86,7 @@ contract FishcollectorTest is DSTest {
     function setUp() public {
         sink = address(this);
         fish = new Fish("FISH", "FISH");
-        fishcollector = new Fishcollector(sink, address(fish));
+        fishcollector = new Fishsink(sink, address(fish));
         app = address(new FishCollectorUser(fishcollector, fish));
         controller = address(new FishCollectorUser(fishcollector, fish));
         fish.mint(app, initialBalanceApp);
