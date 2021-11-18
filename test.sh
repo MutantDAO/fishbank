@@ -2,4 +2,4 @@
 
 ./nixinc.sh
 
-dapp test
+dapp test --verbose

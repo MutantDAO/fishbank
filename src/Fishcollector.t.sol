@@ -201,4 +201,19 @@ contract FishcollectorTest is DSTest {
         assertEq(fishcollector.balanceOf(controller), 0);
         assertEq(fish.balanceOf(controller), initBal + _withdrawal);
     }
+
+    function testMultipleAppsCanBeLinkedToASingleController() public {
+        uint256 num = 100;
+
+        address[] memory _addrs = new address[](num);
+        for (uint32 _i = 0; _i < num; _i++) {
+            _addrs[_i] = (address(new FishCollectorUser(fishcollector, fish)));
+            fish.mint(_addrs[_i], 100 ether);
+            fishcollector.register(_addrs[_i], controller);
+            TokenUser(_addrs[_i]).doApprove(address(fishcollector), 100 ether);
+            FishCollectorUser(_addrs[_i]).deposit(100 ether);
+        }
+
+        assertEq(fishcollector.balanceOf(controller), 500 ether);
+    }
 }
