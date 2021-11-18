@@ -190,15 +190,15 @@ contract FishcollectorTest is DSTest {
 
     function testWithdrawControllerFuzz(uint32 _amount_) public {
         uint256 _amount = uint256(_amount_);
-        if (_amount <= 50) return; // Low numbers lead to zero withdrawals
         fish.mint(app, _amount);
         fish.mint(controller, _amount);
         uint256 initBal = fish.balanceOf(controller);
+        uint256 _withdrawal = ((_amount * 500) / 10000);
+        if (_withdrawal == 0) return;
         approveAndDeposit(app, controller, _amount);
+        assertEq(fishcollector.balanceOf(controller), _withdrawal);
         FishCollectorUser(controller).withdrawal();
-        assertEq(
-            fish.balanceOf(controller),
-            initBal + ((_amount * 500) / 10000)
-        );
+        assertEq(fishcollector.balanceOf(controller), 0);
+        assertEq(fish.balanceOf(controller), initBal + _withdrawal);
     }
 }
