@@ -29,7 +29,7 @@ contract MyContract is FishDepositor {
 
 ### Check the balance of your maintainer rewards
 
-```
+```solidity
 function balanceOf(address _maintainer) public return (uint256)
 ```
 
@@ -37,7 +37,7 @@ function balanceOf(address _maintainer) public return (uint256)
 
 To claim your rewards from the fishBank the relavent maintainer address should be connected to etherscan and the `withdrawal` function called. 
 
-```
+```solidity
 function withdraw() public
 ```
 
@@ -53,13 +53,13 @@ Connect the owner wallet to etherscan.
 Run the following contract method on the Fishbank contract to block withdrawal for a particular app:
 
 ```solidity
-fishbank.block(address _app);
+function block(address _app) public onlyOwner;
 ```
 
 To set a new withdrawal address for an app you can use the `adminRegister` function:
 
 ```solidity
-fishbank.adminRegister(address _app, address _maintainer);
+adminRegister(address _app, address _maintainer) public onlyOwner;
 ```
 
 ### Halt contract
@@ -71,7 +71,7 @@ Connect the owner wallet to etherscan.
 
 
 ```solidity
-fishbank.toggleEmergency();
+function toggleEmergency() public onlyOwner;
 ```
 
 Now you can withdraw the funds and reallocate them as required. This method will not work when it is not an emergency.
