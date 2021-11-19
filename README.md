@@ -6,7 +6,7 @@ Not ready for use yet.
 
 This set of smart contracts will manage fees in FISH for the mutant DAO.
 
-## Depositor Usage
+## FishDepositor Usage
 
 ### Create and register a depositor app
 
@@ -29,6 +29,10 @@ contract MyContract is FishDepositor {
 }
 
 ```
+
+---
+
+## Interacting with the FishBank
 
 ### Check the balance of your app maintainer rewards
 
