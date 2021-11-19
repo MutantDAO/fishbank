@@ -1,3 +1,8 @@
+🚧 Under construction 🚧
+
+Not ready for use yet.
+
+
 # FISHBANK
 
 This set of smart contracts will manage fees in FISH for the mutant DAO.  
