@@ -18,7 +18,8 @@ App developer can make their apps into a fish burning app by extending the `Fish
 import "MutantDAO/fishsink/src/FishDepositor.sol"
 
 contract MyContract is FishDepositor {
-  // The FishDepositor constructor will accept the maintainers wallet address which will be allowed to claim fish rewards for this app.
+  // The FishDepositor constructor will accept a pointer to the fishbank contract 
+  // and the maintainers wallet address which will be allowed to claim fish rewards for this app.
   // The wallet address must be separate from the app address.
   constructor(address _fishBank) FishDepositor(_fishBank, 0x111111111111111111111111111111111111111111) {}
 
