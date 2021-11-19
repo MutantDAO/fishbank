@@ -6,9 +6,9 @@ Not ready for use yet.
 
 This set of smart contracts will manage fees in FISH for the mutant DAO.
 
-## FishDepositor Usage
+## Creating a Depositor App
 
-### Create and register a depositor app
+### The Easy Way: Extend the FishDepositor contract
 
 App developer can make their apps into a fish burning app by extending the `FishDepositor` contract like so:
 
@@ -29,8 +29,6 @@ contract MyContract is FishDepositor {
 }
 
 ```
-
----
 
 ## Interacting with the FishBank
 
