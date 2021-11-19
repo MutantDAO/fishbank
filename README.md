@@ -57,7 +57,7 @@ function block(address _app) public onlyOwner;
 To set a new withdrawal address for an app you can use the `adminRegister` function:
 
 ```solidity
-adminRegister(address _app, address _maintainer) public onlyOwner;
+function adminRegister(address _app, address _maintainer) public onlyOwner;
 ```
 
 ### Halt contract
@@ -75,7 +75,7 @@ function toggleEmergency() public onlyOwner;
 Now you can withdraw the funds and reallocate them as required. This method will not work when it is not an emergency.
 
 ```solidity
-fishbank.withdrawEmergency();
+function withdrawEmergency(uint256 _amount) public onlyOwner;
 ```
 
 ---
