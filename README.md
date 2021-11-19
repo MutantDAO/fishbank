@@ -6,6 +6,12 @@ Not ready for use yet.
 
 This set of smart contracts will manage fees in FISH for the mutant DAO.
 
+## Current deployments
+
+| Network | Etherscan                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------- |
+| Ropsten | https://ropsten.etherscan.io/address/0x7eBDd23E1ED4774508803e842461b3BE9Da5569f#readContract |
+
 ## Creating a Depositor App
 
 ### The Easy Way: Extend the FishDepositor contract
