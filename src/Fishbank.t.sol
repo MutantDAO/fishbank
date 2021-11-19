@@ -69,6 +69,10 @@ contract FishCollectorUser is TokenUser {
     function doWithdraw(address _app) public {
         c.doWithdraw(_app);
     }
+
+    function registerMaintainer(address _maintainer) public {
+        c.registerMaintainer(_maintainer);
+    }
 }
 
 contract FishbankTest is DSTest {
@@ -98,7 +102,7 @@ contract FishbankTest is DSTest {
         address _controller,
         uint256 _amount
     ) public {
-        fishcollector.registerMaintainer(_app, _controller);
+        FishCollectorUser(_app).registerMaintainer(_controller);
         TokenUser(app).doApprove(address(fishcollector), _amount);
         emit log_named_uint("amount:", _amount);
         FishCollectorUser(app).deposit(_amount);
@@ -149,24 +153,20 @@ contract FishbankTest is DSTest {
     }
 
     function testFailWhenRegisterMaintaineringOwnerAsApp() public {
-        fishcollector.registerMaintainer(address(this), maintainer);
+        FishCollectorUser(maintainer).registerMaintainer(maintainer);
     }
 
     function testFailWhenRegisterMaintaineringControllerAsApp() public {
-        fishcollector.registerMaintainer(maintainer, maintainer);
+        FishCollectorUser(maintainer).registerMaintainer(maintainer);
     }
 
     function testFailWhenRegisterMaintaineringNullAddressAsController() public {
-        fishcollector.registerMaintainer(maintainer, address(0));
-    }
-
-    function testFailWhenRegisterMaintaineringNullAddressAsApp() public {
-        fishcollector.registerMaintainer(address(0), maintainer);
+        FishCollectorUser(maintainer).registerMaintainer(address(0));
     }
 
     function testFailWhenDepositerIsOwner() public {
         uint256 _amount = 100 ether;
-        fishcollector.registerMaintainer(address(this), maintainer);
+        fishcollector.registerMaintainer(maintainer);
         fish.approve(address(fishcollector), _amount);
         fishcollector.deposit(_amount);
     }
@@ -207,7 +207,7 @@ contract FishbankTest is DSTest {
         for (uint32 _i = 0; _i < num; _i++) {
             _addrs[_i] = (address(new FishCollectorUser(fishcollector, fish)));
             fish.mint(_addrs[_i], 100 ether);
-            fishcollector.registerMaintainer(_addrs[_i], maintainer);
+            FishCollectorUser(_addrs[_i]).registerMaintainer(maintainer);
             TokenUser(_addrs[_i]).doApprove(address(fishcollector), 100 ether);
             FishCollectorUser(_addrs[_i]).deposit(100 ether);
             assertEq(fishcollector.balanceOf(_addrs[_i]), 5 ether);

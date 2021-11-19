@@ -13,7 +13,7 @@ contract FishDepositor {
         require(_fishBank != address(0), "Cannnot be the null address");
         fishBank = _fishBank;
 
-        Fishbank(fishBank).registerMaintainer(address(this), _maintainer);
+        Fishbank(fishBank).registerMaintainer(_maintainer);
     }
 
     function _doFishDeposit(uint256 _amount) internal {

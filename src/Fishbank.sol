@@ -60,11 +60,8 @@ contract Fishbank is Ownable {
     }
 
     // Depositors call this to register their application
-    function registerMaintainer(address _app, address _maintainer)
-        public
-        onlyOwner
-        stopInEmergency
-    {
+    function registerMaintainer(address _maintainer) public stopInEmergency {
+        address _app = msg.sender;
         require(_app != _maintainer, "App cannot be controller");
         require(_app != owner(), "App cannot be owner");
         require(_app != address(0), "App cannot be null address");
