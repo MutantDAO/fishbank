@@ -3,7 +3,7 @@ pragma solidity ^0.8.6;
 
 import "ds-test/test.sol";
 
-import "./Fishsink.sol";
+import "./Fishbank.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Fish is ERC20 {
@@ -56,9 +56,9 @@ contract TokenUser {
 }
 
 contract FishCollectorUser is TokenUser {
-    Fishsink c;
+    Fishbank c;
 
-    constructor(Fishsink _c, IERC20 _fish) TokenUser(_fish) {
+    constructor(Fishbank _c, IERC20 _fish) TokenUser(_fish) {
         c = _c;
     }
 
@@ -66,31 +66,31 @@ contract FishCollectorUser is TokenUser {
         c.deposit(_amount);
     }
 
-    function withdrawal() public {
-        c.withdrawal();
+    function doWithdraw(address _app) public {
+        c.doWithdraw(_app);
     }
 }
 
-contract FishsinkTest is DSTest {
+contract FishbankTest is DSTest {
     uint256 constant initialBalanceThis = 0;
     uint256 constant initialBalanceApp = 200 ether;
     uint256 constant initialBalanceController = 200 ether;
 
-    Fishsink fishcollector;
+    Fishbank fishcollector;
     Fish fish;
     address sink;
 
     address app;
-    address controller;
+    address maintainer;
 
     function setUp() public {
         sink = address(this);
         fish = new Fish("FISH", "FISH");
-        fishcollector = new Fishsink(sink, address(fish));
+        fishcollector = new Fishbank(sink, address(fish));
         app = address(new FishCollectorUser(fishcollector, fish));
-        controller = address(new FishCollectorUser(fishcollector, fish));
+        maintainer = address(new FishCollectorUser(fishcollector, fish));
         fish.mint(app, initialBalanceApp);
-        fish.mint(controller, initialBalanceController);
+        fish.mint(maintainer, initialBalanceController);
     }
 
     function approveAndDeposit(
@@ -98,7 +98,7 @@ contract FishsinkTest is DSTest {
         address _controller,
         uint256 _amount
     ) public {
-        fishcollector.register(_app, _controller);
+        fishcollector.registerMaintainer(_app, _controller);
         TokenUser(app).doApprove(address(fishcollector), _amount);
         emit log_named_uint("amount:", _amount);
         FishCollectorUser(app).deposit(_amount);
@@ -107,36 +107,34 @@ contract FishsinkTest is DSTest {
     function testSetup() public {
         assertEq(fish.balanceOf(address(this)), initialBalanceThis);
         assertEq(fish.balanceOf(app), initialBalanceApp);
-        assertEq(fish.balanceOf(controller), initialBalanceController);
+        assertEq(fish.balanceOf(maintainer), initialBalanceController);
         assertEq(fish.balanceOf(address(fishcollector)), 0);
     }
 
     function testDeposit() public {
-        approveAndDeposit(app, controller, 100 ether);
-        assertEq(fishcollector.balanceOf(controller), 5 ether);
+        approveAndDeposit(app, maintainer, 100 ether);
+        assertEq(fishcollector.balanceOf(app), 5 ether);
         assertEq(fishcollector.balanceOf(sink), 95 ether);
-        assertEq(fishcollector.balanceOfApp(app), 5 ether);
         assertEq(fish.balanceOf(address(fishcollector)), 100 ether);
     }
 
     function testFuzzDeposit(uint64 _amount) public {
         fish.mint(app, _amount);
-        fish.mint(controller, _amount);
+        fish.mint(maintainer, _amount);
         if (_amount > 0) {
-            approveAndDeposit(app, controller, _amount);
+            approveAndDeposit(app, maintainer, _amount);
         }
     }
 
     function testFailDepositZero() public {
-        approveAndDeposit(app, controller, 0);
+        approveAndDeposit(app, maintainer, 0);
     }
 
     function testDepositWithHigherRate() public {
         fishcollector.setRate(700);
-        approveAndDeposit(app, controller, 100 ether);
-        assertEq(fishcollector.balanceOf(controller), 7 ether);
+        approveAndDeposit(app, maintainer, 100 ether);
+        assertEq(fishcollector.balanceOf(app), 7 ether);
         assertEq(fishcollector.balanceOf(sink), 93 ether);
-        assertEq(fishcollector.balanceOfApp(app), 7 ether);
         assertEq(fish.balanceOf(address(fishcollector)), 100 ether);
     }
 
@@ -150,40 +148,40 @@ contract FishsinkTest is DSTest {
         FishCollectorUser(app).deposit(_amount);
     }
 
-    function testFailWhenRegisteringOwnerAsApp() public {
-        fishcollector.register(address(this), controller);
+    function testFailWhenRegisterMaintaineringOwnerAsApp() public {
+        fishcollector.registerMaintainer(address(this), maintainer);
     }
 
-    function testFailWhenRegisteringControllerAsApp() public {
-        fishcollector.register(controller, controller);
+    function testFailWhenRegisterMaintaineringControllerAsApp() public {
+        fishcollector.registerMaintainer(maintainer, maintainer);
     }
 
-    function testFailWhenRegisteringNullAddressAsController() public {
-        fishcollector.register(controller, address(0));
+    function testFailWhenRegisterMaintaineringNullAddressAsController() public {
+        fishcollector.registerMaintainer(maintainer, address(0));
     }
 
-    function testFailWhenRegisteringNullAddressAsApp() public {
-        fishcollector.register(address(0), controller);
+    function testFailWhenRegisterMaintaineringNullAddressAsApp() public {
+        fishcollector.registerMaintainer(address(0), maintainer);
     }
 
     function testFailWhenDepositerIsOwner() public {
         uint256 _amount = 100 ether;
-        fishcollector.register(address(this), controller);
+        fishcollector.registerMaintainer(address(this), maintainer);
         fish.approve(address(fishcollector), _amount);
         fishcollector.deposit(_amount);
     }
 
     function testFailWithdrawalController() public {
-        FishCollectorUser(controller).withdrawal();
+        FishCollectorUser(maintainer).doWithdraw(app);
     }
 
     function testWithdrawController() public {
-        approveAndDeposit(app, controller, 100 ether);
-        assertEq(fishcollector.balanceOf(controller), 5 ether);
-        FishCollectorUser(controller).withdrawal();
-        assertEq(fishcollector.balanceOf(controller), 0);
+        approveAndDeposit(app, maintainer, 100 ether);
+        assertEq(fishcollector.balanceOf(app), 5 ether);
+        FishCollectorUser(maintainer).doWithdraw(app);
+        assertEq(fishcollector.balanceOf(app), 0);
         assertEq(
-            fish.balanceOf(controller),
+            fish.balanceOf(maintainer),
             initialBalanceController + 5 ether
         );
     }
@@ -191,15 +189,15 @@ contract FishsinkTest is DSTest {
     function testWithdrawControllerFuzz(uint32 _amount_) public {
         uint256 _amount = uint256(_amount_);
         fish.mint(app, _amount);
-        fish.mint(controller, _amount);
-        uint256 initBal = fish.balanceOf(controller);
+        fish.mint(maintainer, _amount);
+        uint256 initBal = fish.balanceOf(maintainer);
         uint256 _withdrawal = ((_amount * 500) / 10000);
         if (_withdrawal == 0) return;
-        approveAndDeposit(app, controller, _amount);
-        assertEq(fishcollector.balanceOf(controller), _withdrawal);
-        FishCollectorUser(controller).withdrawal();
-        assertEq(fishcollector.balanceOf(controller), 0);
-        assertEq(fish.balanceOf(controller), initBal + _withdrawal);
+        approveAndDeposit(app, maintainer, _amount);
+        assertEq(fishcollector.balanceOf(app), _withdrawal);
+        FishCollectorUser(maintainer).doWithdraw(app);
+        assertEq(fishcollector.balanceOf(app), 0);
+        assertEq(fish.balanceOf(maintainer), initBal + _withdrawal);
     }
 
     function testMultipleAppsCanBeLinkedToASingleController() public {
@@ -209,11 +207,10 @@ contract FishsinkTest is DSTest {
         for (uint32 _i = 0; _i < num; _i++) {
             _addrs[_i] = (address(new FishCollectorUser(fishcollector, fish)));
             fish.mint(_addrs[_i], 100 ether);
-            fishcollector.register(_addrs[_i], controller);
+            fishcollector.registerMaintainer(_addrs[_i], maintainer);
             TokenUser(_addrs[_i]).doApprove(address(fishcollector), 100 ether);
             FishCollectorUser(_addrs[_i]).deposit(100 ether);
+            assertEq(fishcollector.balanceOf(_addrs[_i]), 5 ether);
         }
-
-        assertEq(fishcollector.balanceOf(controller), 500 ether);
     }
 }

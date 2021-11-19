@@ -2,10 +2,9 @@
 
 Not ready for use yet.
 
-
 # FISHBANK
 
-This set of smart contracts will manage fees in FISH for the mutant DAO.  
+This set of smart contracts will manage fees in FISH for the mutant DAO.
 
 ## Depositor Usage
 
@@ -18,7 +17,7 @@ App developer can make their apps into a fish burning app by extending the `Fish
 import "MutantDAO/fishsink/src/FishDepositor.sol"
 
 contract MyContract is FishDepositor {
-  // The FishDepositor constructor will accept a pointer to the fishbank contract 
+  // The FishDepositor constructor will accept a pointer to the fishbank contract
   // and the maintainers wallet address which will be allowed to claim fish rewards for this app.
   // The wallet address must be separate from the app address.
   constructor(address _fishBank) FishDepositor(_fishBank, 0x111111111111111111111111111111111111111111) {}
@@ -31,22 +30,27 @@ contract MyContract is FishDepositor {
 
 ```
 
-### Check the balance of your maintainer rewards
+### Check the balance of your app maintainer rewards
 
 ```solidity
-function balanceOf(address _maintainer) public return (uint256)
+function balanceOf(address _app) public return (uint256)
+```
+
+### Find out the current maintainer for the app.
+
+```solidity
+function maintainerOf(address _app) public return (address)
 ```
 
 ### Claiming rewards
 
-To claim your rewards from the fishBank the relavent maintainer address should be connected to etherscan and the `withdrawal` function called. 
+To claim your rewards from the fishBank the relavent maintainer address should be connected to etherscan and the `withdrawal` function called.
 
 ```solidity
-function withdraw() public
+function doWithdraw(address _app) public
 ```
 
 This will send your app rewards to your wallet.
-
 
 ## Admin functions
 
@@ -57,22 +61,20 @@ Connect the owner wallet to etherscan.
 Run the following contract method on the Fishbank contract to block withdrawal for a particular app:
 
 ```solidity
-function block(address _app) public onlyOwner;
+function blockMaintainer(address _app) public onlyOwner;
 ```
 
-To set a new withdrawal address for an app you can use the `adminRegister` function:
+To set a new withdrawal address for an app you can use the `setMaintainer` function:
 
 ```solidity
-function adminRegister(address _app, address _maintainer) public onlyOwner;
+function setMaintainer(address _app, address _maintainer) public onlyOwner;
 ```
 
 ### Halt contract
 
 This will cause all deposits to fail and lock withdrawals. Funds will be able to be withdrawn by the owner only.
 
-
 Connect the owner wallet to etherscan.
-
 
 ```solidity
 function toggleEmergency() public onlyOwner;
@@ -120,4 +122,3 @@ make
 ```
 make test
 ```
-
