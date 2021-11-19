@@ -37,27 +37,19 @@ App developers make their apps and include the following code to make a deposit 
 
 ```solidity
 
-import "MutantDAO/fishsink/src/Depositor.sol"
+import "MutantDAO/fishsink/src/FishDepositor.sol"
 
-contract MyContract is Depositor {
-  address constant MY_WITHDRAWAL_ADDRESS = 0x1234aedf1234aedf1234aedf1234aedf1234;
+contract MyContract is FishDepositor {
+  address constant MY_ADDRESS = 0x111111111111111111111111111111111111111111; // Use your address here
 
-  constructor(address _fishSink) Depositor(_fishSink, MY_ADDRESS) {}
+  constructor(address _fishBankContract) Depositor(_fishBankContract, MY_ADDRESS) {}
 
-  function takePayment(uint256 _amount){
-    // Some logic...
-
-    // This causes interaction with
-    _sinkFish(_amount);
+  function takeMyFish(uint256 _amount){
+    // This interacts with the `_fishBankContract` which causes the `_amount` in fish to be transferred to the contract.
+    _doFishDeposit(_amount);
   }
 }
 
-```
-
-This should work regardless of whether they are registered. (Currently not implemented)
-
-```solidity
-Fishsink(FISHSINK).register(MY_DEV_ADDRESS);
 ```
 
 # Usage
