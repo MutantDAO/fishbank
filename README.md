@@ -1,13 +1,97 @@
-# Prerequisites
+# FISHBANK
+
+This set of smart contracts will manage fees in FISH for the mutant DAO.  
+
+## Depositor Usage
+
+### Create and register a depositor app
+
+App developer can make their apps into a fish burning app by extending the `FishDepositor` contract like so:
+
+```solidity
+
+import "MutantDAO/fishsink/src/FishDepositor.sol"
+
+contract MyContract is FishDepositor {
+  // The FishDepositor constructor will accept the maintainers wallet address which will be allowed to claim fish rewards for this app.
+  // The wallet address must be separate from the app address.
+  constructor(address _fishBank) FishDepositor(_fishBank, 0x111111111111111111111111111111111111111111) {}
+
+  function takeMyFish(uint256 _amount){
+    // This interacts with the `_fishBankContract` which causes the `_amount` in fish to be transferred to the contract.
+    _doFishDeposit(_amount);
+  }
+}
+
+```
+
+### Check the balance of your maintainer rewards
+
+```solidity
+function balanceOf(address _maintainer) public return (uint256)
+```
+
+### Claiming rewards
+
+To claim your rewards from the fishBank the relavent maintainer address should be connected to etherscan and the `withdrawal` function called. 
+
+```solidity
+function withdraw() public
+```
+
+This will send your app rewards to your wallet.
+
+
+## Admin functions
+
+### Withhold reward access
+
+Connect the owner wallet to etherscan.
+
+Run the following contract method on the Fishbank contract to block withdrawal for a particular app:
+
+```solidity
+function block(address _app) public onlyOwner;
+```
+
+To set a new withdrawal address for an app you can use the `adminRegister` function:
+
+```solidity
+function adminRegister(address _app, address _maintainer) public onlyOwner;
+```
+
+### Halt contract
+
+This will cause all deposits to fail and lock withdrawals. Funds will be able to be withdrawn by the owner only.
+
+
+Connect the owner wallet to etherscan.
+
+
+```solidity
+function toggleEmergency() public onlyOwner;
+```
+
+Now you can withdraw the funds and reallocate them as required. This method will not work when it is not an emergency.
+
+```solidity
+function withdrawEmergency(uint256 _amount) public onlyOwner;
+```
+
+---
+
+## Working with this repo
+
+### Prerequisites
 
 - [make](https://www.gnu.org/software/make/)
 
-# Installed dependencies
+### Installed dependencies
 
 - [dapp.tools](https://github.com/dapphub/dapptools)
 - [nix](https://nixos.org)
 
-# Installation
+### Installation
 
 ```
 ./install.sh
@@ -19,48 +103,15 @@ This installs:
 - dapp.tools
 - solc
 
-# Building
+### Building
 
 ```
 make
 ```
 
-# Testing
+### Testing
 
 ```
 make test
 ```
 
-# Usage
-
-1. Deployer deploys `fishsink` contract
-
-2. Deployer recieves addresses for registration and registers those addresses withthe contract:
-
-```
-fishsink.register(appContract1, developer1);
-fishsink.register(appContract2, developer2);
-fishsink.register(appContract3, developer3);
-fishsink.register(appContract4, developer4);
-```
-
-Developers can register more than one app contract.
-
-3. Live applications approve a transfer and call the deposit method.
-
-```sol
-ERC20(fish).approve(fishsink, 100 ether);
-Fishsink(fishsink).deposit(100 ether);
-```
-
-4. Whenever they want to developers can claim their fees.
-
-- Go to the fishsink contract on etherscan.
-- Call `balanceOf(mywallet)` to check your balance.
-- Connect your wallet and call the `withdrawal()` method pay the gas and your balance will be sent to your wallet.
-
-5. In the case of problematic behaviour rewards can be removed by reregistering the app with address(0)
-
-```
-fishsink.register(appContract1, address(0)); // Disable withdrawals
-```
