@@ -1,4 +1,4 @@
-all: ; dapp build
-clean: ; dapp clean
-test: ; dapp test
+all: ; ./build.sh
+clean: ; ./clean.sh
+test: ; ./test.sh
 deploy: ; dapp create Fishbank

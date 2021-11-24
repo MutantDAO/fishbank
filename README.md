@@ -101,23 +101,7 @@ function withdrawEmergency(uint256 _amount) public onlyOwner;
 ### Prerequisites
 
 - [make](https://www.gnu.org/software/make/)
-
-### Installed dependencies
-
-- [dapp.tools](https://github.com/dapphub/dapptools)
-- [nix](https://nixos.org)
-
-### Installation
-
-```
-./install.sh
-```
-
-This installs:
-
-- nix
-- dapp.tools
-- solc
+- [docker](https://docs.docker.com/get-docker/)
 
 ### Building
 

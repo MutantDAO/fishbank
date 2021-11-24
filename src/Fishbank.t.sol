@@ -87,6 +87,30 @@ contract FishbankTest is DSTest {
     address app;
     address maintainer;
 
+
+    modifier withRate(uint16 _rate){
+        fishcollector.setRate(_rate);
+        _;
+    }
+
+    modifier withDeposit(uint256 _amount) {
+        approveAndDeposit(app, maintainer, _amount);
+        _;
+    }
+
+    modifier withDepositZeroGuard(uint256 _amount){
+        if(_amount > 0){ 
+            approveAndDeposit(app, maintainer, _amount);
+        }
+        _;
+    }
+
+    modifier withMintExtra(uint256 _amount) {
+        fish.mint(app, _amount);
+        fish.mint(maintainer, _amount);
+        _;
+    }
+
     function setUp() public {
         sink = address(this);
         fish = new Fish("FISH", "FISH");
@@ -115,35 +139,25 @@ contract FishbankTest is DSTest {
         assertEq(fish.balanceOf(address(fishcollector)), 0);
     }
 
-    function testDeposit() public {
-        approveAndDeposit(app, maintainer, 100 ether);
+    function testDeposit() public withDeposit(100 ether) {
         assertEq(fishcollector.balanceOf(app), 5 ether);
         assertEq(fishcollector.balanceOf(sink), 95 ether);
         assertEq(fish.balanceOf(address(fishcollector)), 100 ether);
     }
 
-    function testFuzzDeposit(uint64 _amount) public {
-        fish.mint(app, _amount);
-        fish.mint(maintainer, _amount);
-        if (_amount > 0) {
-            approveAndDeposit(app, maintainer, _amount);
-        }
+    function testFuzzDeposit(uint64 _amount) public withMintExtra(_amount) withDepositZeroGuard(_amount) {
     }
 
-    function testFailDepositZero() public {
-        approveAndDeposit(app, maintainer, 0);
+    function testFailDepositZero() public withDeposit(0) {
     }
 
-    function testDepositWithHigherRate() public {
-        fishcollector.setRate(700);
-        approveAndDeposit(app, maintainer, 100 ether);
+    function testDepositWithHigherRate() public withRate(700) withDeposit(100 ether) {
         assertEq(fishcollector.balanceOf(app), 7 ether);
         assertEq(fishcollector.balanceOf(sink), 93 ether);
         assertEq(fish.balanceOf(address(fishcollector)), 100 ether);
     }
 
-    function testFailRate() public {
-        fishcollector.setRate(5100);
+    function testFailRate() public withRate(5100) {
     }
 
     function testFailWhenDepositWithoutRegistration() public {
